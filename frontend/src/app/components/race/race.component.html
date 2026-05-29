@@ -1,15 +1,35 @@
-<div class="bg-white w-full p-8 rounded shadow-md text-center">
-    <h1 class="title text-3xl font-bold mb-6">RACES</h1>
+<div>
+    <form (ngSubmit)="onCalculate()">
+        <input type="number" [(ngModel)]="amount" name="amount" placeholder="Belopp i SEK" required />
+        <select [(ngModel)]="country" name="country" required>
+            <option value="Mexiko">Mexiko</option>
+            <option value="Colombia">Colombia</option>
+            <option value="USA">USA</option>
+        </select>
+        <button type="submit">Beräkna rutter</button>
+    </form>
 
-    @for (race of races$ | async; track race.date) {
-        
-        <div class="mb-4 border-b pb-4">
-            <h2 class="text-xl font-semibold">
-                {{ race.date }}
-            </h2>
-            <p>{{ race.temperatureC }}</p>
-            <p>{{ race.summery }}</p>
-        </div>
+    @if (isLoading) {
+    <div
+        style="text-align: center; padding: 40px; color: #666; background: #f9f9f9; border-radius: 8px; border: 1px dashed #ccc;">
+        <h3 style="margin-top: 0;">🔄 Hämtar live-data...</h3>
+        <p>Skannar marknaden för de bästa krypto- och valutakurserna just nu.</p>
+    </div>
     }
 
+    @if (apiResponse) {
+    <div>
+        <h3>Tillgängliga rutter för {{ apiResponse.targetCountry }}</h3>
+        <p>{{ apiResponse.savingsMessage }}</p>
+
+        @for (route of apiResponse.routes; track route.name) {
+        <div>
+            <h4>{{ route.name }}</h4>
+            <p>{{ route.description }}</p>
+            <p>Avgift: {{ route.feeSEK }} SEK</p>
+            <p>Tid: {{ route.timeInSeconds }} sekunder</p>
+        </div>
+        }
+    </div>
+    }
 </div>
