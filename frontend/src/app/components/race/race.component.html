@@ -1,0 +1,15 @@
+<div class="bg-white w-full p-8 rounded shadow-md text-center">
+    <h1 class="title text-3xl font-bold mb-6">RACES</h1>
+
+    @for (race of races$ | async; track race.date) {
+        
+        <div class="mb-4 border-b pb-4">
+            <h2 class="text-xl font-semibold">
+                {{ race.date }}
+            </h2>
+            <p>{{ race.temperatureC }}</p>
+            <p>{{ race.summery }}</p>
+        </div>
+    }
+
+</div>
