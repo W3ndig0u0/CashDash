@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CashDash")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e65138eb6c950e943a5c94b617b76e82a59cda1f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dda07cf4bc5431800b6b6f19ef7469f254e79908")]
 [assembly: System.Reflection.AssemblyProductAttribute("CashDash")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CashDash")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
