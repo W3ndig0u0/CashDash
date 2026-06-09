@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-slate-50 flex flex-col antialiased text-slate-900">
+<div class="min-h-screen bg-slate-50 flex flex-col antialiased text-slate-900 relative">
 
   <main class="grow py-12 md:py-20">
     <div class="max-w-4xl mx-auto px-4 sm:px-6">
@@ -11,6 +11,119 @@
 
     </div>
   </main>
+
+  @if (activeSection) {
+  <div
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-[fadeIn_0.15s_ease-out]"
+    (click)="activeSection = null">
+    <div
+      class="bg-white border border-slate-100 w-full max-w-2xl rounded-2xl shadow-xl max-h-[85vh] overflow-y-auto p-6 md:p-8 space-y-6 relative animate-[scaleUp_0.15s_ease-out]"
+      (click)="$event.stopPropagation()">
+
+      <div class="flex justify-between items-center border-b border-slate-100 pb-4">
+        <div>
+          @if (activeSection === 'how-it-works') {
+          <h2 class="text-xs font-bold uppercase tracking-widest text-slate-400">Metodik</h2>
+          <p class="text-base font-semibold text-slate-900">Så fungerar routingmotorn</p>
+          }
+          @if (activeSection === 'security') {
+          <h2 class="text-xs font-bold uppercase tracking-widest text-slate-400">Integritet</h2>
+          <p class="text-base font-semibold text-slate-900">Säkerhetsarkitektur & BankID</p>
+          }
+          @if (activeSection === 'support') {
+          <h2 class="text-xs font-bold uppercase tracking-widest text-slate-400">Kontakt</h2>
+          <p class="text-base font-semibold text-slate-900">Kundservice</p>
+          }
+          @if (activeSection === 'privacy') {
+          <h2 class="text-xs font-bold uppercase tracking-widest text-slate-400">Rättsligt</h2>
+          <p class="text-base font-semibold text-slate-900">Användarvillkor & Cookies</p>
+          }
+        </div>
+        <button (click)="activeSection = null"
+          class="w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-colors text-sm font-medium">
+          ✕
+        </button>
+      </div>
+
+      <div class="space-y-6 text-sm">
+        @if (activeSection === 'how-it-works') {
+        <div class="grid grid-cols-1 gap-4">
+          <div class="bg-slate-50 p-5 rounded-xl border border-slate-100 space-y-1">
+            <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider">01. Aggregering</span>
+            <p class="text-xs text-slate-600 leading-relaxed">Systemet skickar parallella asynkrona anrop till
+              blockkedjeoracles, likviditets-pooler och traditionella valutamarknader för att hämta rådata.</p>
+          </div>
+          <div class="bg-slate-50 p-5 rounded-xl border border-slate-100 space-y-1">
+            <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider">02. Avgiftskalkyl</span>
+            <p class="text-xs text-slate-600 leading-relaxed">Alla dolda sprickor, nätverksavgifter (gas),
+              uttagsavgifter samt fasta clearingkostnader räknas om till svenska kronor baserat på sekundaktuell
+              FX-kurs.</p>
+          </div>
+          <div class="bg-slate-50 p-5 rounded-xl border border-slate-100 space-y-1">
+            <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider">03. Optimering</span>
+            <p class="text-xs text-slate-600 leading-relaxed">Algoritmen sorterar och presenterar den mest
+              kostnadseffektiva och snabbaste vägen, redo för omedelbar exekvering på respektive plattform.</p>
+          </div>
+        </div>
+        }
+
+        @if (activeSection === 'security') {
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div class="space-y-1">
+            <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">🔒
+              BankID-Verifiering</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">När transaktioner initieras integrerar våra partners
+              sömlöst med mobilt BankID för fullständig efterlevnad av lagstadgade KYC-krav.</p>
+          </div>
+          <div class="space-y-1">
+            <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">🧬
+              Zero-Knowledge</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">CashDash agerar enbart som beräkningsmotor. Inga
+              personuppgifter, saldon eller kontonummer sparas på våra servrar.</p>
+          </div>
+          <div class="space-y-1">
+            <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">📡 TLS 1.3
+              Kryptering</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">Samtliga API-anrop sker via krypterade tunnlar för att
+              omöjliggöra avlyssning eller manipulation under transitering.</p>
+          </div>
+          <div class="space-y-1">
+            <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">⚖️
+              Regulatorisk tillsyn</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">Underliggande likviditetsleverantörer innehar strikta
+              licenser från Finansinspektionen samt europeiska tillsynsmyndigheter.</p>
+          </div>
+        </div>
+        }
+
+        @if (activeSection === 'support') {
+        <div
+          class="bg-slate-50 rounded-xl p-5 border border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div class="space-y-1">
+            <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Teknisk Support</h3>
+            <p class="text-xs text-slate-500 leading-relaxed">Vid frågor gällande API-integrationer eller avvikande
+              produktionsdata, kontakta oss via e-post.</p>
+          </div>
+          <a href="mailto:support@w3ndig0.se"
+            class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-lg transition-colors whitespace-nowrap">
+            support@w3ndig0.se
+          </a>
+        </div>
+        }
+
+        @if (activeSection === 'privacy') {
+        <p class="text-xs text-slate-500 leading-relaxed">
+          Genom att använda CashDash godkänner du att plattformen tillhandahåller indikativa realtidskurser. Vi
+          reserverar oss för snabba marknadsförändringar där kurser kan fluktuera mellan beräkning och exekvering.
+          Applikationen använder strikt nödvändiga sessionscookies i din webbläsare för att bibehålla valda valutapar
+          och inmatade belopp under din aktiva session. Ingen spårning sker för marknadsföringsändamål.
+        </p>
+        }
+      </div>
+
+    </div>
+  </div>
+  }
 
   <footer class="bg-white border-t border-slate-100 mt-auto">
     <div class="max-w-4xl mx-auto px-6 py-8 md:py-12 space-y-8">
@@ -32,9 +145,12 @@
         </div>
 
         <div class="flex flex-wrap gap-x-8 gap-y-2 text-xs font-semibold text-slate-600">
-          <a href="#how-it-works" class="hover:text-slate-900 transition-colors">Så fungerar det</a>
-          <a href="#security" class="hover:text-slate-900 transition-colors">Säkerhet & BankID</a>
-          <a href="#support" class="hover:text-slate-900 transition-colors">Kundservice</a>
+          <button (click)="activeSection = 'how-it-works'"
+            class="hover:text-slate-900 transition-colors cursor-pointer">Så fungerar det</button>
+          <button (click)="activeSection = 'security'"
+            class="hover:text-slate-900 transition-colors cursor-pointer">Säkerhet & BankID</button>
+          <button (click)="activeSection = 'support'"
+            class="hover:text-slate-900 transition-colors cursor-pointer">Kundservice</button>
         </div>
       </div>
 
@@ -53,8 +169,8 @@
           &copy; 2026 W3ndig0 AB. Alla rättigheter förbehållna.
         </div>
         <div class="flex space-x-4">
-          <a href="#privacy" class="hover:underline">Användarvillkor</a>
-          <a href="#cookies" class="hover:underline">Cookies</a>
+          <button (click)="activeSection = 'privacy'" class="hover:underline cursor-pointer">Användarvillkor</button>
+          <button (click)="activeSection = 'privacy'" class="hover:underline cursor-pointer">Cookies</button>
         </div>
       </div>
 

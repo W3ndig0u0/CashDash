@@ -9,5 +9,6 @@ import { RaceComponent } from './components/race/race.component';
 })
 
 export class App {
+  activeSection: string | null = null;
   protected readonly title = signal('frontend');
 }
