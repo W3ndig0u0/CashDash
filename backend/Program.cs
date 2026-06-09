@@ -17,6 +17,10 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
+builder.Services.AddMemoryCache();
+builder.Services.AddHttpClient<IRouteCalculator, RouteCalculator>();
+
 var app = builder.Build();
 app.UseCors("AllowAngular");
 app.MapControllers();
