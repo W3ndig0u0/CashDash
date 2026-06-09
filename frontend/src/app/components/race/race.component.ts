@@ -1,5 +1,5 @@
 import { CommonModule } from "@angular/common";
-import { Component } from "@angular/core";
+import { ChangeDetectorRef, Component } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { RouteResponse } from "../../models/race.model";
 import { RaceService } from "../../services/race.service";
@@ -16,16 +16,22 @@ export class RaceComponent {
   apiResponse: RouteResponse | null = null;
   isLoading: boolean = false; 
 
-  constructor(public raceService: RaceService) {}
+  private readonly currencyMap: Record<string, string> = {
+    'USA': 'USD',
+    'Europa': 'EUR',
+    'Storbritannien': 'GBP',
+    'Schweiz': 'CHF',
+    'Japan': 'JPY',
+    'Australien': 'AUD',
+    'Kanada': 'CAD',
+    'Indien': 'INR',
+    'Mexiko': 'MXN',
+  };
+
+  constructor(public raceService: RaceService, private cdRef: ChangeDetectorRef) {}
 
   onCalculate(): void {
-    let currencyCode = 'USD';
-    
-    if (this.country === 'Mexiko') {
-      currencyCode = 'MXN';
-    } else if (this.country === 'Colombia') {
-      currencyCode = 'COP';
-    }
+    const currencyCode = this.currencyMap[this.country] || 'USD';
 
     this.isLoading = true;
     this.apiResponse = null;
@@ -39,10 +45,12 @@ export class RaceComponent {
       next: (res) => {
         this.apiResponse = res;
         this.isLoading = false;
+        this.cdRef.detectChanges();
       },
       error: (err) => {
         console.error(err);
         this.isLoading = false;
+        this.cdRef.detectChanges();
       }
     });
   }
