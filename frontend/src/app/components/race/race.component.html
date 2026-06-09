@@ -21,6 +21,10 @@
                     <option value="Kanada">Kanada (CAD)</option>
                     <option value="Indien">Indien (INR)</option>
                     <option value="Mexiko">Mexiko (MXN)</option>
+                    <option value="Kurdistan">Kurdistan (IQD)</option>
+                    <option value="Bangladesh">Bangladesh (BDT)</option>
+                    <option value="Kina">Kina (CNY)</option>
+                    <option value="Sydkorea">Sydkorea (KRW)</option>
                 </select>
                 <span
                     class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</span>
@@ -63,7 +67,7 @@
             <div class="divide-y divide-slate-100 border-y border-slate-100 w-full">
                 @for (route of apiResponse.routes; track route.name; let first = $first) {
                 <div
-                    class="py-5 flex flex-col items-center sm:flex-row sm:items-center justify-between gap-4 group text-center sm:text-left w-full">
+                    class="py-5 flex items-center sm:flex-row sm:items-center justify-between gap-4 group text-center sm:text-left w-full">
         
                     <div class="space-y-1 flex flex-col items-center sm:items-start">
                         <div class="flex items-center gap-2">

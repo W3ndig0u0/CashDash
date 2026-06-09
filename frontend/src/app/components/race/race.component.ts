@@ -26,8 +26,12 @@ export class RaceComponent {
     'Australien': 'AUD',
     'Kanada': 'CAD',
     'Indien': 'INR',
-    'Mexiko': 'MXN'
-  };
+    'Mexiko': 'MXN',
+    'Kurdistan': 'IQD',
+    'Bangladesh': 'BDT',
+    'Kina': 'CNY',
+    'Sydkorea': 'KRW'
+};
 
   constructor(
     public raceService: RaceService,
