@@ -7,7 +7,7 @@ import { RouteRequest, RouteResponse } from '../models/race.model';
   providedIn: 'root'
 })
 export class RaceService {
-  private backendUrl = 'http://localhost:5184';
+  private backendUrl = 'https://cashdash-dm6e.onrender.com';
 
   constructor(private http: HttpClient) {}
 
