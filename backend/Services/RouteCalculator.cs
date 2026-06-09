@@ -42,17 +42,20 @@ public class RouteCalculator : IRouteCalculator
         var cryptoTask = FetchCryptoPricesInSekAsync();
         var krakenTask = FetchKrakenTakerFeeAsync();
         var withdrawalFeesTask = FetchLiveWithdrawalFeesUsdAsync();
+        var wiseTask = FetchWiseFeeSekAsync(request.AmountSEK, targetCurrency);
 
         var ethGasTask = FetchEvmGasPriceGweiAsync("EthGas", $"https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey={_apiSettings.EtherscanApiKey}", 25.0);
         var baseGasTask = FetchEvmGasPriceGweiAsync("BaseGas", $"https://api.basescan.org/api?module=gastracker&action=gasoracle&apikey={_apiSettings.EtherscanApiKey}", 0.1);
         var arbGasTask = FetchEvmGasPriceGweiAsync("ArbGas", $"https://api.arbiscan.io/api?module=gastracker&action=gasoracle&apikey={_apiSettings.EtherscanApiKey}", 0.1);
         var polyGasTask = FetchEvmGasPriceGweiAsync("PolyGas", $"https://api.polygonscan.com/api?module=gastracker&action=gasoracle&apikey={_apiSettings.EtherscanApiKey}", 30.0);
-        await Task.WhenAll(fiatTask, cryptoTask, krakenTask, withdrawalFeesTask, ethGasTask, baseGasTask, arbGasTask, polyGasTask);
+
+        await Task.WhenAll(fiatTask, cryptoTask, krakenTask, withdrawalFeesTask, wiseTask, ethGasTask, baseGasTask, arbGasTask, polyGasTask);
 
         double liveFxRate = fiatTask.Result;
         var cryptoPrices = cryptoTask.Result;
         double krakenTakerFeePct = krakenTask.Result;
         var liveWithdrawalFeesUsd = withdrawalFeesTask.Result;
+        double wiseFeeSek = wiseTask.Result;
 
         double ethGasGwei = ethGasTask.Result;
         double baseGasGwei = baseGasTask.Result;
@@ -82,19 +85,18 @@ public class RouteCalculator : IRouteCalculator
             new("Ethereum", ethGasFeeSek, 15, "USDC")
         ];
 
-        var calculatedRoutes = new List<RouteDetails>();
+        var allRoutes = new List<RouteDetails>();
 
         foreach (var net in networks)
         {
             double tradingFeeSek = request.AmountSEK * krakenTakerFeePct;
-
             double withdrawalFeeUsd = liveWithdrawalFeesUsd.GetValueOrDefault(net.Name, 1.0);
             double withdrawalFeeSek = withdrawalFeeUsd * liveFxRate;
 
             double totalFeeSek = tradingFeeSek + withdrawalFeeSek + net.GasFeeSek;
             double receivedInTargetFiat = (request.AmountSEK - totalFeeSek) * liveFxRate;
 
-            calculatedRoutes.Add(new RouteDetails(
+            allRoutes.Add(new RouteDetails(
                 net.Name,
                 $"Mottagaren får {receivedInTargetFiat:F2} {targetCurrency}",
                 net.TimeInSeconds,
@@ -102,31 +104,48 @@ public class RouteCalculator : IRouteCalculator
             ));
         }
 
-        var optimalWeb3Route = calculatedRoutes.MinBy(r => r.FeeSEK) ?? calculatedRoutes.First();
-
         double bankSwiftFeeSek = 50.0;
         double bankFxSpread = 0.015;
-
         double bankRealFxRate = liveFxRate * (1 - bankFxSpread);
         double amountAfterSwiftFee = request.AmountSEK - bankSwiftFeeSek;
         double receivedViaBank = Math.Max(0, amountAfterSwiftFee * bankRealFxRate);
+        double totalBankFeeSek = bankSwiftFeeSek + (request.AmountSEK * bankFxSpread);
 
         var bankRoute = new RouteDetails(
             "Traditionell Bank (SWIFT)",
             $"Mottagaren får {receivedViaBank:F2} {targetCurrency}",
             259200,
-            Math.Round(bankSwiftFeeSek + (request.AmountSEK * bankFxSpread), 2)
+            Math.Round(totalBankFeeSek, 2)
         );
+        allRoutes.Add(bankRoute);
 
-        double bestWeb3Payout = (request.AmountSEK - optimalWeb3Route.FeeSEK) * liveFxRate;
-        double savings = bestWeb3Payout - receivedViaBank;
+        double receivedViaWise = Math.Max(0, (request.AmountSEK - wiseFeeSek) * liveFxRate);
+        var wiseRoute = new RouteDetails(
+            "Wise",
+            $"Mottagaren får {receivedViaWise:F2} {targetCurrency}",
+            1800,
+            Math.Round(wiseFeeSek, 2)
+        );
+        allRoutes.Add(wiseRoute);
 
-        string savingsMessage = $"Genom att använda {optimalWeb3Route.Name} får mottagaren {savings:F2} {targetCurrency} mer på kontot!";
+        var sortedRoutes = allRoutes.OrderBy(r => r.FeeSEK).ToList();
+
+        var bestRoute = sortedRoutes.First();
+        double maximumPossiblePayout = (request.AmountSEK - bestRoute.FeeSEK) * liveFxRate;
+        if (bestRoute.Name.Contains("Bank"))
+        {
+            maximumPossiblePayout = receivedViaBank;
+        }
+
+        double savings = maximumPossiblePayout - receivedViaBank;
+        string savingsMessage = savings > 0
+            ? $"Genom att välja optimal rutt får mottagaren {savings:F2} {targetCurrency} mer på kontot jämfört med banken!"
+            : "Traditionell bank är ovanligt nog det billigaste alternativet för denna överföring.";
 
         return new RouteResponse(
             request.DestinationCountry,
             request.AmountSEK,
-            new List<RouteDetails> { optimalWeb3Route, bankRoute },
+            sortedRoutes,
             savingsMessage
         );
     }
@@ -265,6 +284,41 @@ public class RouteCalculator : IRouteCalculator
 
             var fallbacks = new Dictionary<string, double> { { "USD", 0.106 } };
             return fallbacks.GetValueOrDefault(targetCurrency, 1.0);
+        });
+    }
+
+    private async Task<double> FetchWiseFeeSekAsync(double amountSek, string targetCurrency)
+    {
+        string cacheKey = $"WiseFee_{amountSek}_{targetCurrency}";
+
+        return await _cache.GetOrCreateAsync(cacheKey, async entry =>
+        {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2);
+
+            try
+            {
+                var url = $"https://api.transferwise.com/v3/quotes?sourceCurrency=SEK&targetCurrency={targetCurrency}&sourceAmount={amountSek}";
+                var response = await _httpClient.GetStringAsync(url);
+                using var doc = JsonDocument.Parse(response);
+
+                var root = doc.RootElement;
+                if (root.TryGetProperty("paymentOptions", out var options))
+                {
+                    foreach (var option in options.EnumerateArray())
+                    {
+                        if (option.GetProperty("disabled").GetBoolean() == false)
+                        {
+                            return option.GetProperty("fee").GetProperty("amount").GetDouble();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Wise API misslyckades. Använder fallback.");
+            }
+
+            return 5.0 + (amountSek * 0.005);
         });
     }
 

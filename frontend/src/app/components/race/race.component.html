@@ -1,22 +1,24 @@
-<div class="max-w-4xl mx-auto p-4 md:p-8 text-slate-800 space-y-10">
+<div class="max-w-4xl mx-auto p-6 md:p-12 text-slate-900 space-y-12 antialiased">
 
-    <div class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-100">
-        <h2 class="text-2xl font-bold mb-6">Jämför överföringar</h2>
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-8">
+        <div>
+            <h1 class="text-xl font-semibold tracking-tight text-slate-900">CashDash</h1>
+            <p class="text-sm text-slate-400">Global cross-border routing engine</p>
+        </div>
 
-        <form (ngSubmit)="onCalculate()" class="flex flex-col md:flex-row gap-4 items-end">
-            <label class="flex-1 block">
-                <span class="text-sm font-medium text-slate-500 mb-1 block">Belopp (SEK)</span>
-                <input type="number" [(ngModel)]="amount" name="amount" placeholder="T.ex. 1000" required
-                    class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none" />
-            </label>
+        <form (ngSubmit)="onCalculate()" class="flex flex-col sm:flex-row gap-3 items-center w-full md:w-auto">
+            <div class="relative w-full sm:w-44">
+                <input type="number" [(ngModel)]="amount" name="amount" required
+                    class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-slate-400 focus:bg-white outline-none transition-all text-sm font-medium pl-9" />
+                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-medium">SEK</span>
+            </div>
 
-            <label class="flex-1 block">
-                <span class="text-sm font-medium text-slate-500 mb-1 block">Destination</span>
+            <div class="relative w-full sm:w-52">
                 <select [(ngModel)]="country" name="country" required
-                    class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 outline-none">
+                    class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:border-slate-400 focus:bg-white outline-none transition-all text-sm font-medium appearance-none cursor-pointer">
                     <option value="USA">USA (USD)</option>
                     <option value="Europa">Europa (EUR)</option>
-                    <option value="Storbritannien">UK (GBP)</option>
+                    <option value="Storbritannien">Storbritannien (GBP)</option>
                     <option value="Schweiz">Schweiz (CHF)</option>
                     <option value="Japan">Japan (JPY)</option>
                     <option value="Australien">Australien (AUD)</option>
@@ -24,70 +26,104 @@
                     <option value="Indien">Indien (INR)</option>
                     <option value="Mexiko">Mexiko (MXN)</option>
                 </select>
-            </label>
-        
+                <span
+                    class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">▼</span>
+            </div>
+
             <button type="submit" [disabled]="isLoading"
-                class="w-full md:w-auto px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl flex justify-center items-center disabled:opacity-50 disabled:cursor-not-allowed">
+                class="w-full sm:w-auto px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white text-sm font-medium rounded-xl transition-all disabled:opacity-40 flex justify-center items-center h-11.5">
                 @if (isLoading) {
-                <svg class="animate-spin -ml-1 mr-2 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
-                    viewBox="0 0 24 24">
-                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                    <path class="opacity-75" fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                    </path>
-                </svg>
-                Jämför...
+                <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                 } @else {
-                Jämför rutter
+                Kalkylera
                 }
             </button>
         </form>
     </div>
 
     @if (isLoading) {
-    <div
-        class="flex flex-col items-center text-center p-12 bg-slate-50 border border-dashed border-slate-300 rounded-2xl animate-pulse">
-        <span class="text-4xl mb-4">🌐</span>
-        <h3 class="text-xl font-semibold mb-2">Hämtar live-data...</h3>
-        <p class="text-slate-500 max-w-md">Skannar blockkedjor och marknader för bästa kurs just nu.</p>
+    <div class="py-24 flex flex-col items-center justify-center space-y-4">
+        <div class="w-6 h-6 border-2 border-slate-200 border-t-slate-800 rounded-full animate-spin"></div>
+        <p class="text-xs tracking-wider text-slate-400 uppercase font-medium">Hämtar marknadsdata...</p>
     </div>
     }
 
     @if (!isLoading && apiResponse) {
-    <div class="space-y-8">
+    <div class="space-y-12 animate-[fadeIn_0.2s_ease-out]">
 
-        <div class="text-center space-y-4">
-            <h3 class="text-3xl font-bold">Resultat för {{ apiResponse.targetCountry }}</h3>
-            <p
-                class="inline-block bg-emerald-50 text-emerald-800 border border-emerald-200 px-6 py-3 rounded-xl font-medium">
-                ✨ {{ apiResponse.savingsMessage }}
-            </p>
+        <div
+            class="bg-slate-50 border border-slate-100 rounded-2xl p-6 flex flex-col sm:flex-row sm:items-center justify-center gap-4">
+            <div class="space-y-1 text-center sm:text-left">
+                <h2 class="text-sm font-semibold text-slate-900">Optimal rutt funnen</h2>
+                <p class="text-sm text-slate-500 leading-relaxed max-w-xl">{{ apiResponse.savingsMessage }}</p>
+            </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            @for (route of apiResponse.routes; track route.name) {
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col">
+        <div class="space-y-6">
+            <h3 class="text-xs font-bold uppercase tracking-widest text-slate-400">Tillgängliga rutter</h3>
 
-                <h4 class="text-xl font-bold mb-2">{{ route.name }}</h4>
-                <p class="text-slate-600 mb-6 grow">{{ route.description }}</p>
-
-                <div class="pt-4 border-t border-slate-100 flex justify-between">
-                    <div>
-                        <p class="text-xs font-semibold text-slate-400 uppercase">Avgift</p>
-                        <p class="text-xl font-bold">{{ route.feeSEK }} SEK</p>
+            <div class="divide-y divide-slate-100 border-y border-slate-100">
+                @for (route of apiResponse.routes; track route.name; let first = $first) {
+                <div class="py-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-semibold text-slate-900">{{ route.name }}</span>
+                            @if (first) {
+                            <span
+                                class="text-[10px] font-bold uppercase bg-slate-900 text-white px-2 py-0.5 rounded-md tracking-wider">Billigast</span>
+                            }
+                        </div>
+                        <p class="text-sm text-slate-400 font-medium">{{ route.description }}</p>
                     </div>
-                    <div class="text-right">
-                        <p class="text-xs font-semibold text-slate-400 uppercase">Tid</p>
-                        <p class="text-xl font-bold"
-                            [ngClass]="route.timeInSeconds < 60 ? 'text-emerald-600' : 'text-rose-500'">
-                            {{ route.timeInSeconds }} sek
-                        </p>
+
+                    <div class="flex items-center gap-8 text-sm font-medium">
+                        <div class="w-24">
+                            <span
+                                class="text-slate-400 block text-[10px] uppercase tracking-wider font-bold mb-0.5">Avgift</span>
+                            <span class="text-slate-900 font-semibold">{{ route.feeSEK }} SEK</span>
+                        </div>
+                        <div class="w-24 text-right sm:text-left">
+                            <span
+                                class="text-slate-400 block text-[10px] uppercase tracking-wider font-bold mb-0.5">Tid</span>
+                            <span [ngClass]="route.timeInSeconds < 3600 ? 'text-slate-900' : 'text-slate-400'">
+                                {{ route.timeInSeconds | timeFormatter }}
+                            </span>
+                        </div>
                     </div>
                 </div>
-
+                }
             </div>
-            }
         </div>
+
+        <div class="grid grid-cols-1 gap-8 pt-4">
+            <div class="bg-white border border-slate-100 shadow-sm rounded-2xl p-6 md:p-8 space-y-6">
+                <div>
+                    <h3 class="text-sm font-semibold text-slate-900">Kostnadsindex</h3>
+                    <p class="text-xs text-slate-400">Visuell jämförelse av totala transaktionsavgifter (lägre är
+                        bättre)</p>
+                </div>
+
+                <div class="space-y-4">
+                    @for (route of apiResponse.routes; track route.name; let first = $first) {
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between text-xs font-medium">
+                            <span class="text-slate-600">{{ route.name }}</span>
+                            <span class="text-slate-900 font-semibold">{{ route.feeSEK }} SEK</span>
+                        </div>
+
+                        <div
+                            class="h-2 w-full bg-slate-50 rounded-full overflow-hidden relative border border-slate-100/50">
+                            <div class="h-full rounded-full transition-all duration-500"
+                                [ngClass]="first ? 'bg-indigo-600' : route.name.includes('Bank') ? 'bg-rose-200' : 'bg-slate-200'"
+                                [style.width.%]="route.feeSEK === 0 ? 1 : (route.feeSEK / apiResponse.routes[apiResponse.routes.length - 1].feeSEK) * 100">
+                            </div>
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+
     </div>
     }
 </div>

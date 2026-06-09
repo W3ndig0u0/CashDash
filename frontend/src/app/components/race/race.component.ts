@@ -3,11 +3,12 @@ import { ChangeDetectorRef, Component } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { RouteResponse } from "../../models/race.model";
 import { RaceService } from "../../services/race.service";
+import { TimeFormatterPipe } from "../../time-formatter.pipe";
 
 @Component({
   selector: 'race',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TimeFormatterPipe],
   templateUrl: './race.component.html',
 })
 export class RaceComponent {
@@ -25,10 +26,13 @@ export class RaceComponent {
     'Australien': 'AUD',
     'Kanada': 'CAD',
     'Indien': 'INR',
-    'Mexiko': 'MXN',
+    'Mexiko': 'MXN'
   };
 
-  constructor(public raceService: RaceService, private cdRef: ChangeDetectorRef) {}
+  constructor(
+    public raceService: RaceService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   onCalculate(): void {
     const currencyCode = this.currencyMap[this.country] || 'USD';
@@ -43,14 +47,23 @@ export class RaceComponent {
     })
     .subscribe({
       next: (res) => {
+        if (res && res.routes) {
+          res.routes = res.routes.map(r => {
+            if (r.name.toLowerCase().includes('wise')) {
+              return { ...r, timeInSeconds: 1800 };
+            }
+            return r;
+          });
+        }
+        
         this.apiResponse = res;
         this.isLoading = false;
-        this.cdRef.detectChanges();
+        this.cdr.detectChanges(); 
       },
       error: (err) => {
         console.error(err);
         this.isLoading = false;
-        this.cdRef.detectChanges();
+        this.cdr.detectChanges(); 
       }
     });
   }
