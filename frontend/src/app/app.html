@@ -70,12 +70,6 @@
         @if (activeSection === 'security') {
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div class="space-y-1">
-            <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">🔒
-              BankID-Verifiering</h3>
-            <p class="text-xs text-slate-500 leading-relaxed">När transaktioner initieras integrerar våra partners
-              sömlöst med mobilt BankID för fullständig efterlevnad av lagstadgade KYC-krav.</p>
-          </div>
-          <div class="space-y-1">
             <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">🧬
               Zero-Knowledge</h3>
             <p class="text-xs text-slate-500 leading-relaxed">CashDash agerar enbart som beräkningsmotor. Inga
@@ -86,12 +80,6 @@
               Kryptering</h3>
             <p class="text-xs text-slate-500 leading-relaxed">Samtliga API-anrop sker via krypterade tunnlar för att
               omöjliggöra avlyssning eller manipulation under transitering.</p>
-          </div>
-          <div class="space-y-1">
-            <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5">⚖️
-              Regulatorisk tillsyn</h3>
-            <p class="text-xs text-slate-500 leading-relaxed">Underliggande likviditetsleverantörer innehar strikta
-              licenser från Finansinspektionen samt europeiska tillsynsmyndigheter.</p>
           </div>
         </div>
         }
@@ -148,7 +136,7 @@
           <button (click)="activeSection = 'how-it-works'"
             class="hover:text-slate-900 transition-colors cursor-pointer">Så fungerar det</button>
           <button (click)="activeSection = 'security'"
-            class="hover:text-slate-900 transition-colors cursor-pointer">Säkerhet & BankID</button>
+            class="hover:text-slate-900 transition-colors cursor-pointer">Säkerhet</button>
           <button (click)="activeSection = 'support'"
             class="hover:text-slate-900 transition-colors cursor-pointer">Kundservice</button>
         </div>
